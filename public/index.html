@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Controle de Materiais</title>
+</head>
+<body>
+  <h1>Registro de Materiais</h1>
+  <form id="form">
+    <label>Nome: <input type="text" name="nome" required /></label><br>
+    <label>Materiais: <input type="text" name="materiais" required /></label><br>
+    <label>Motivo: <input type="text" name="motivo" required /></label><br>
+    <button type="submit">Registrar</button>
+  </form>
+
+  <script>
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      await fetch('/registrar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      alert('Registro salvo!');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
