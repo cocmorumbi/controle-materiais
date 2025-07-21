@@ -1,0 +1,12 @@
+# Node.js
+node_modules/
+
+# Variáveis de ambiente (senhas, conexões etc.)
+.env
+
+# Logs
+*.log
+
+# Cache do sistema ou do editor
+.DS_Store
+.vscode/
