@@ -3,28 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <title>Controle de Materiais</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    hr {
+      margin: 30px 0;
+    }
+
+    .registro {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+
+    .registro:last-child {
+      border-bottom: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>Registro de Materiais</h1>
-  <form id="form">
-    <label>Nome: <input type="text" name="nome" required /></label><br>
-    <label>Materiais: <input type="text" name="materiais" required /></label><br>
-    <label>Motivo: <input type="text" name="motivo" required /></label><br>
-    <button type="submit">Registrar</button>
-  </form>
+  <div class="container">
+    <h1>Controle de Materiais</h1>
+    <form id="form">
+      <label>Nome:
+        <input type="text" name="nome" required />
+      </label>
+      <label>Materiais:
+        <textarea name="materiais" required></textarea>
+      </label>
+      <label>Motivo:
+        <textarea name="motivo" required></textarea>
+      </label>
+      <button type="submit">Registrar</button>
+    </form>
+
+    <hr />
+
+    <h2>Registros Recentes</h2>
+    <div id="registros"></div>
+  </div>
 
   <script>
-    document.getElementById('form').addEventListener('submit', async (e) => {
+    const form = document.getElementById('form');
+    const registrosDiv = document.getElementById('registros');
+
+    async function carregarRegistros() {
+      const res = await fetch('/registros');
+      const dados = await res.json();
+
+      registrosDiv.innerHTML = dados
+        .map(item => `
+          <div class="registro">
+            <strong>${item.nome}</strong> - ${new Date(item.data_hora).toLocaleString()}<br>
+            <em>Materiais:</em> ${item.materiais}<br>
+            <em>Motivo:</em> ${item.motivo}
+          </div>
+        `)
+        .join('');
+    }
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const data = Object.fromEntries(new FormData(e.target));
+      const data = Object.fromEntries(new FormData(form));
       await fetch('/registrar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      alert('Registro salvo!');
-      e.target.reset();
+      form.reset();
+      await carregarRegistros();
     });
+
+    // Carrega registros ao abrir a página
+    carregarRegistros();
   </script>
 </body>
 </html>

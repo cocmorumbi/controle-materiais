@@ -6,7 +6,7 @@ const port = 3000;
 
 // Configurando conexão com banco PostgreSQL
 const pool = new Pool({
-  connectionString: 'sua_connection_string_do_neon_ou_render'
+  connectionString: process.env.DATABASE_URL
 });
 
 app.use(express.static('public')); // colocar o HTML em uma pasta "public"
@@ -26,6 +26,16 @@ app.post('/registrar', async (req, res) => {
   } catch (err) {
     console.error('Erro ao inserir:', err);
     res.status(500).send('Erro ao salvar registro');
+  }
+});
+
+app.get('/registros', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM registros ORDER BY data_hora DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Erro ao buscar registros:', err);
+    res.status(500).send('Erro ao buscar registros');
   }
 });
 
